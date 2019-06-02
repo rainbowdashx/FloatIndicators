@@ -49,6 +49,9 @@ local sharedColors = {
 
 core.bossOrder = core.bossOrder + 1
 
+
+local ActiveSoakAuratargetGUIDS={}
+
 ns.AddEncounter(2273,{
 	Enable = true,
 	Name = core.Lang.BOSS2,
@@ -72,6 +75,9 @@ ns.AddEncounter(2273,{
 		]==]
 	},
 	Handler = function(self, event, ...)
+
+
+		
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then 
 			local _, eventType, _, srcGUID, srcName, srcFlags, srcFlags2, dstGUID, dstName, dstFlags, dstFlags2, spellID, spellName, spellSchool, auraType, amount, extraSchool, extraType= ...  
 			
@@ -79,6 +85,11 @@ ns.AddEncounter(2273,{
 				if ( spellID == 285652 ) then
 					if ( OC(285652) ) then
 						ns.SetCircle(dstGUID, 285652, 3, 70, nil, nil, '-'..core.Lang.HEAL)
+						ActiveSoakAuratargetGUIDS[dstGUID] = {
+							PlayerName = dstName,
+							GUID = dstGUID,
+							Show = true
+						};
 					end
 				elseif spellID == 293662 or spellID == 293661 or spellID == 293663 then
 					if ( OC('marks') ) then
@@ -117,6 +128,9 @@ ns.AddEncounter(2273,{
 				if ( spellID == 285652 ) then
 					if ( OC(285652) ) then
 						ns.HideCircle(dstGUID, 285652) 
+						ActiveSoakAuratargetGUIDS[dstGUID] = {
+							Show = false
+						};
 					end
 				elseif spellID == 293662 or spellID == 293661 or spellID == 293663 then
 					if ( OC('marks') ) then
@@ -148,6 +162,23 @@ ns.AddEncounter(2273,{
 				end
 			end
 			]==]
+			local guidx = UnitGUID("Chlopskie");
+			--function ns.SetCircle(owner, tag, color, size, offset, alpha, text, textSize)
+			if guidx ~= UnitGUID('player') then
+				ns.SetCircle(guidx, 'CAMP', 1, 90, nil, 0.2,nil)	
+			end
+
+			--UPDATE SOAK AURAS TEXT
+			--function ns.SetCircle(owner, tag, color, size, offset, alpha, text, textSize)
+			for i,Obj in pairs(ActiveSoakAuratargetGUIDS) do
+				if	Obj ~=nil and Obj.Show == true then
+					local PercentHealth = format("%.2f",(UnitHealth(Obj.PlayerName) / UnitHealthMax(Obj.PlayerName) * 100))
+					local View = "\n\n"..PercentHealth.."% "
+					ns.SetCircle(Obj.GUID, 285652, 3, 70, nil, nil, View..core.Lang.HEAL)	
+				end
+			end
+
+
 
 			if OC('tankCircle') then
 				local findEm = nil
@@ -187,5 +218,8 @@ ns.AddEncounter(2273,{
 				ns.HideCircleByTag('bossTarget')
 			end
 		end
+	end,
+	OnEngage = function(self)
+		ActiveSoakAuratargetGUIDS={}
 	end,
 })
