@@ -162,11 +162,7 @@ ns.AddEncounter(2273,{
 				end
 			end
 			]==]
-			local guidx = UnitGUID("Chlopskie");
-			--function ns.SetCircle(owner, tag, color, size, offset, alpha, text, textSize)
-			if guidx ~= UnitGUID('player') then
-				ns.SetCircle(guidx, 'CAMP', 1, 90, nil, 0.2,nil)	
-			end
+			
 
 			--UPDATE SOAK AURAS TEXT
 			--function ns.SetCircle(owner, tag, color, size, offset, alpha, text, textSize)
@@ -221,5 +217,11 @@ ns.AddEncounter(2273,{
 	end,
 	OnEngage = function(self)
 		ActiveSoakAuratargetGUIDS={}
+
+		local guidx = UnitGUID("Chlopskie");
+			--function ns.SetCircle(owner, tag, color, size, offset, alpha, text, textSize)
+			if guidx ~= UnitGUID('player') then
+				ns.SetCircle(guidx, 'CAMP', 1, 90, nil, 0.2,nil)	
+			end
 	end,
 })
